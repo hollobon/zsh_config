@@ -1,0 +1,23 @@
+#autoload 
+
+inpath()
+{
+    # Find all executables in PATH with provided name
+
+    setopt localoptions null_glob
+
+    typeset -Ua upath
+    typeset -a RESULTS
+    local PATTERN
+    local result
+
+    upath=($path)
+    for D in $upath; do
+        PATTERN="$D/$1"
+        RESULTS=(${~PATTERN})
+
+        for result in $RESULTS; do
+            [[ -x $result ]] && print $result
+        done
+    done
+}

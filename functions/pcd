@@ -1,0 +1,29 @@
+pcd() {
+    NEWDIR=$1
+
+    # No args - cd to home dir
+    [[ $NEWDIR == "" ]] && NEWDIR=~
+
+    # - as arg, exchange top two on directory stack
+    if [[ $NEWDIR == "-" ]] ; then
+        pushd
+        return
+    fi
+
+    # directory stack into number->directory assoc array
+    #  cwd always at top of stack in position 0
+    declare -A dstack
+    dstack=($(dirs -lv))
+
+    # get number of new dir if in stack
+    in_stack=${(k)dstack[(r)$NEWDIR]}
+
+    # change to existing stack dir if in stack, really change if not
+    if [[ $in_stack != "" ]]; then
+        pushd +$in_stack
+    else
+        pushd $NEWDIR
+    fi
+}
+
+compdef _cd pcd

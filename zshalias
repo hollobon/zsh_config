@@ -1,0 +1,75 @@
+# -*- mode: Shell-script; -*-
+
+alias rerc="source ~/.zshrc"
+alias ll="ls -ltr"
+alias llh="ls -ltrh"
+alias gv="gvim"
+alias pd="pushd"
+
+alias mv="mv -i"
+alias rm="rm -i"
+alias cp="cp -i"
+
+alias ctnl="tr ',' '\n'"
+
+alias gvimr="gvim --remote"
+
+# Reconnect to a screen session if possible
+alias rescr='[ -n "$SSH_AUTH_SOCK" ] && (print "export SSH_AUTH_SOCK=$SSH_AUTH_SOCK" > ~/.ssh_sock); screen -qDR'
+
+alias pkillu="pkill -u $USER"
+
+# Create a random password and stick it on the clipboard
+alias newpw="apg -a1 -m 15 -n 1 -MNCL | xsel -bi"
+
+# Paste interleave - interleaves lines of 2 or more files.
+alias pastei="paste -d\\\n"
+
+alias ec="emacsclient --no-wait -a emacs"
+alias ecw="emacsclient -a emacs"
+
+alias find.="noglob find . -name"
+alias findi.="noglob find . -iname"
+
+alias nospaces="sed -e 's/ //g'"
+
+alias cx="chmod u+x"
+alias mmv="noglob zmv -W"
+
+alias p4changestats='for d in $(p4 users | cut -f1 -d\ ); do echo -n $d: ; p4 changes -u $d | wc -l ; done | sort -k 2,2 -n'
+
+# OS specific, site agnostic
+if [[ $OSTYPE = solaris* ]]; then
+    alias piostat="iostat -xnCme 2"
+fi
+
+(ls --version 2> /dev/null) | grep gnu > /dev/null && alias ls="ls --color=auto"
+
+# Site specific
+if [[ $LOCATION = work ]]; then
+
+elif [[ $LOCATION = home ]]; then
+    alias scan="xsane 'hpaio:/net/Photosmart_2570_series?ip=10.0.0.133'"
+
+    alias mailme="mail hollobon@gmail.com"
+
+    # Show internet connections with full process commandline.
+    alias lsofi="lsof -i +c0"
+
+    if [[ $OSTYPE = linux* ]]; then
+        # stream a CD as MP3
+        alias streamcd="cdda2wav -D=/dev/hdc - | lame - - | nc -l -p 3000"
+    fi
+fi
+
+alias lsb="ls -B"
+alias llb="ll -B"
+alias "cd-"="cd -"
+
+if [[ -e /usr/bin/VBoxManage ]]; then
+    alias vbm=VBoxManage
+fi
+
+alias stowconfigure='./configure --prefix /usr/local/stow/$(basename $PWD)'
+
+alias hibernate="sudo pm-hibernate"

@@ -1,0 +1,18 @@
+# -*- mode: Shell-script; -*-
+
+local -A dirs
+
+if [[ $LOCATION = work ]]; then 
+    dirs=(
+        )
+
+elif [[ $HOST = host1 ]]; then
+    dirs=(
+    )
+fi
+
+for x y in ${(kv)dirs};
+do
+    [[ $OSTYPE = *cygwin* ]] && y="/cygdrive/n/${y}"
+    export $x=$y
+done

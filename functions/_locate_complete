@@ -1,0 +1,55 @@
+#autoload
+
+#
+# Complete words from locate db
+#
+# Available styles:
+#
+#   sort --  sort matches lexically (default is to sort by age)
+#   remove-all-dups --
+#            remove /all/ duplicate matches rather than just consecutives
+#   range -- range of history words to complete
+#
+
+local opt expl max slice hmax=40 beg=1
+
+if zstyle -t ":completion:${curcontext}:" remove-all-dups; then
+  opt=-
+else
+  opt=-1
+fi
+
+if zstyle -t ":completion:${curcontext}:" sort; then
+  opt="${opt}J"
+else
+  opt="${opt}V"
+fi
+
+if zstyle -s ":completion:${curcontext}:" range max; then
+  if [[ $max = *:* ]]; then
+    slice=${max#*:}
+    max=${max%:*}
+  else
+    slice=$max
+  fi
+  [[ max -gt hmax ]] && max=$hmax
+else
+  max=$hmax
+  slice=$max
+fi
+
+PREFIX="$IPREFIX$PREFIX"
+IPREFIX=
+SUFFIX="$SUFFIX$ISUFFIX"
+ISUFFIX=
+
+local -a locateresults
+locateresults=( ${(f)"$(locate --database=/u/hollobon/var/locatedb $PREFIX)"} )
+
+while [[ $compstate[nmatches] -eq 0 && beg -lt max ]]; do
+    _wanted "$opt" locate-complete expl 'locate files' \
+    compadd -U -a 'locateresults[beg,beg+slice]'
+    (( beg+=slice ))
+done
+
+(( $compstate[nmatches] ))

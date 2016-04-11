@@ -1,0 +1,101 @@
+# -*- mode: Shell-script; -*-
+
+# New completion
+autoload -U compinit
+compinit
+
+bindkey '^I' complete-word
+bindkey '^[[Z' reverse-menu-complete
+zstyle ':completion:::::' completer _expand _complete _ignored
+
+# Completion appearance
+if [[ -n $fg ]]; then
+    zstyle ':completion*' format "%{$fg_bold[yellow]%}%d%{$terminfo[sgr0]%}"
+else
+    zstyle ':completion*' format %B%d%b
+fi
+zstyle ':completion*' group-name ''
+zstyle ':completion*' verbose yes
+zstyle ':completion*' list-separator #
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+
+# F3 to open menu selection completion
+zle -C pete-menu-comp complete-word _generic
+#if [[ -n ${terminfo[kf3]} ]]; then     
+#    bindkey ${terminfo[kf3]} pete-menu-comp
+#else
+bindkey '^X^I' pete-menu-comp
+#fi
+
+zstyle ':completion:pete-menu-comp:*' completer _expand _complete _ignored
+zstyle ':completion:pete-menu-comp:*' menu  yes 'select=0' 
+
+# ^X/ for menu selection on the last 20 words from the history
+zle -C history-complete complete-word _generic                         
+bindkey '^X/' history-complete
+zstyle ':completion:history-complete::::' completer _history
+zstyle ':completion:history-complete:*' menu yes 'select=0'
+zstyle ':completion:history-complete:*' remove-all-dups yes
+zstyle ':completion:history-complete:*' range 20
+
+zle -C locate-complete complete-word _generic                         
+bindkey '^Xx' locate-complete
+zstyle ':completion:locate-complete::::' completer _locate_complete
+zstyle ':completion:locate-complete:*' menu yes 'select=0'
+zstyle ':completion:locate-complete:*' remove-all-dups yes
+zstyle ':completion:locate-complete:*' range 80
+
+# ^Xd to push commandline and invoke cd -
+zle -N dirsmenu
+dirsmenu() {          
+    zle push-line
+    LBUFFER='cd -'
+    zle expand-or-complete
+}
+bindkey ${terminfo[kf2]} dirsmenu
+
+# Use menu selection on directory stack completion
+zstyle ":completion:*:directory-stack" menu yes 'select=0' 'keymap=pete_menuselect'
+
+# Date insertion widgets / keybindings
+# ^Xt - insert today's date in ISO 8601 format
+# ^Xy - insert previous business date in ISO 8601 format
+zle -N isodate
+isodate() {
+    DATE=$(date +%Y%m%d)
+    LBUFFER=$LBUFFER$DATE
+}
+bindkey '^Xt' isodate
+
+zle -N isodate_yday
+isodate_yday() {
+    DATE=$(daysearch -n -1 -f %Y%m%d)
+    LBUFFER=$LBUFFER$DATE
+}
+bindkey '^Xy' isodate_yday
+
+# vi-style bindings for moving around menu selection
+# load complist first to ensure menuselect keymap is created
+zmodload -i zsh/complist
+bindkey -M menuselect 'l' forward-char
+bindkey -M menuselect 'h' backward-char
+bindkey -M menuselect 'k' up-history
+bindkey -M menuselect 'j' down-history
+
+# special keybinding for menu selection which accepts the completion and commandline on pressing
+# enter
+bindkey -N pete_menuselect
+bindkey -M pete_menuselect '^M' .accept-line
+bindkey -M pete_menuselect 'l' forward-char
+bindkey -M pete_menuselect 'h' backward-char
+bindkey -M pete_menuselect 'k' up-history
+bindkey -M pete_menuselect 'j' down-history
+
+# ^Xl to less(1) the word under the cursor, keeping commandline
+autoload less-word
+zle -N less-word
+zstyle ':zle:less-word*' word-style whitespace
+bindkey '^Xl' less-word
+
+# vi line searching
+bindkey '^Xf' vi-find-prev-char

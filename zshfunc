@@ -1,0 +1,219 @@
+# -*- mode: Shell-script; -*-
+
+#
+# zsh functions
+#
+
+if [[ $TERM = screen* ]]; then
+    # screen name in screen
+    title() { print -n '\033k'$@'\033\\ ' }
+elif [[ -n $MRXVT_TABTITLE ]]; then
+    # tab title in MRVXT
+    title() { print -n '\033]61;'$@'\a' }
+else
+    # standard xterm window title for anything else.
+    title() { print -n '\033]0;'$@'\a' }
+fi
+
+ipy() {
+    title IPython
+    env PAGER='less -r' ipython $@
+    title $TERM
+}
+
+ipy25() {
+    title IPython
+    env PAGER='less -r' python2.5 =ipython $@
+    title $TERM
+}
+
+checkww() {
+    find ~ -perm +2 -not -type l -print -exec chmod o-w \{\} \;
+}
+
+# print the most recently created filename matching the pattern provided
+latest() {
+    glob=$1'(oc)'
+    declare -a a
+    a=( $~glob )
+    print ${a[0]}
+}
+alias latest="noglob latest"
+
+inpath() {
+    print -l $^path/$1(N)
+}
+
+pathperms() {
+    DIR=${1:-$PWD}
+    ppath="";
+    for d in ${(s:/:)DIR}; do
+        ppath=${ppath}/$d
+        ls -ld $ppath
+    done
+}
+
+clip() {
+    # Copy args to X selection
+
+    print -n $* | xsel -f
+}
+
+dups() {
+    # Use md5 sums to find duplicate files passed in
+    # XXX probably only works on *BSD at the moment
+
+    local temp=/tmp/dups.$$
+    md5 -r $* | sort > $temp
+    cut -f1 -d\  $temp | uniq -d | join - $temp
+    \rm $temp
+}
+
+wgetup() {
+    # wget a file and unpack into current directory.  Works for zip,
+    # tar (optionally [bg]zipped).
+
+    local getcmd
+    if [[ $OSTYPE = freebsd* ]]; then
+        getcmd() {
+            fetch -o - $1
+        }
+    else;
+        getcmd() {
+            wget $1 -O -
+        }
+    fi
+
+    if [[ $1 = *.zip ]]; then
+        unzip =(getcmd $1)
+    elif [[ $1 = *.(tgz|tar.gz) ]]; then
+        getcmd $1 | tar zxvf -
+    elif [[ $1 = *.tar ]]; then
+        getcmd $1 | tar xvf -
+    elif [[ $1 = *.(tbz|tar.bz2|tar.bz) ]]; then
+        getcmd $1 | tar jzxf -
+    else
+        echo "$0: don't know how to handle extension" \"$1:e\"
+        return 1
+    fi
+}
+
+# Prints full path of argument
+fullpath() {
+    if [ -z $1 ]; then
+        DIR=$PWD;
+    elif [[ "$1" != */* ]]; then
+        DIR=$PWD/$1
+    else
+        DIR=$1
+    fi
+
+    print $DIR
+}
+
+# For sysv-style ps(1)
+psgrep() {
+    ps -fp $(pgrep -d, $*)
+}
+
+# This is probably no better than pkill and should go away.
+pskill() {
+    awk '{ print $2 }' | xargs kill $@
+}
+
+if [[ $OSTYPE = linux-gnu ]]; then
+    watchvc()
+    {
+        # Monitor a virtual console - there must be a better way to do this than polling (select?).
+        watch --interval=2 "sudo sh -c \"perl -pe 's/(.{80})/\1\n/g' < /dev/vcs2\""
+    }
+
+elif [[ $OSTYPE = freebsd* ]]; then
+    # Find a port in FreeBSD - findport [name=xzy] [key=abc].
+    # Values are regular expressions.
+    findport()
+    {
+        ( cd /usr/ports ; make search $* )
+    }
+    alias findport="noglob findport"
+
+    startx()
+    {
+        eval $(ssh-agent)
+        =startx
+    }
+
+    burniso()
+    {
+        sudo burncd -f /dev/acd0 -s max data $1 fixate
+    }
+
+    ripiso()
+    {
+        sudo dd if=/dev/acd0 of=$1 bs=2048
+    }
+
+    psgrep() {
+        ps uxp $(pgrep -d, $* | sed -e 's/,$//g')
+    }
+
+elif [[ $OSTYPE = solaris* ]]; then
+    # Generate Postcript on standard out for specified man page
+    manps() {
+        TCAT=/usr/lib/lp/postscript/dpost /usr/bin/man -t $*
+    }
+fi
+
+if [[ $LOCATION = home ]]; then
+    dpkgsize()
+    {
+        dpkg-query -W -f '${Installed-Size} ${Package}\n' | sort -n
+    }
+
+elif [[ $LOCATION = work ]]; then
+    watchnfs() {
+        # Display NFS server statistics
+        watch -n 10 -d nfsstat -s
+    }
+
+    # display percentage of user filesystem quota used
+    quotapc() {
+        local QUOTA
+
+        # (z) modifier splits using ordinary parsing
+        QUOTA=${(z)$(quota -v | tail -1)}
+        print $(( (${QUOTA[1]}*100) / ${QUOTA[2]} ))%
+    }
+
+    # Translates a unix path to a windows one (assuming N: drive is mapped to unix root).
+    _winpath() {
+        print -n n: ; print -R ${$(fullpath $1)//\//\\}
+    }
+
+    # Calls _winpath on args and copies result to clipboard.
+    winpath() {
+        _winpath $* | ~/bin/xsel -f
+    }
+
+    aphdenied() {
+        ssh front1 /usr/local/gnu/bin/grep -q "Access\ Denied" /var/front/front_master/log/aphtib_ssl4_front_master.log | cut -b51- | sort  | uniq
+    }
+fi
+
+backupphotos() {
+ 	if [ -d /Volumes/BACKUP ]; then
+        rsync  -irtv --modify-window=1 /Network/photos /Volumes/BACKUP
+    else
+        echo Attach backup disk first (/Volumes/BACKUP does not exist)
+        exit 1
+    fi
+}
+
+mdfname() {
+    mdfind kMDItemDisplayName="$*"
+}
+
+proxy() {
+    ssh -f -L 8923:localhost:8923 peterhollobon@yingguo ncat -l --proxy-type http localhost 8923
+    export http_proxy="http://localhost:8923"
+}

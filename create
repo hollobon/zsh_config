@@ -1,0 +1,15 @@
+#!/bin/bash
+
+this="$(basename $0)"
+dirname=$(dirname $0)
+if [ "${dirname:0:1}" == "/" ]; then
+    cwd=$(dirname $0)
+else
+    cwd=$(pwd)/$(dirname $0)
+fi
+
+for rcfile in $cwd/zsh{env,rc}; do
+    rcfile_base=$(basename "$rcfile")
+    echo $rcfile
+    ln -sf $(dirname $rcfile)/$rcfile_base ~/.$rcfile_base
+done

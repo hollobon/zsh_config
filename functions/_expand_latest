@@ -1,0 +1,41 @@
+#compdef -K _expand_latest complete-word \C-XL
+
+# Expand (arg) most recent match.
+
+local word tmp pre glob a offset
+
+eval "$_comp_setup"
+
+if [[ -n $funcstack[2] ]]; then
+  if [[ "$funcstack[2]" = _prefix ]]; then
+    word="$IPREFIX$PREFIX$SUFFIX"
+  else
+    word="$IPREFIX$PREFIX$SUFFIX$ISUFFIX"
+  fi
+  pre=()
+else
+  local curcontext="$curcontext"
+
+  if [[ -z "$curcontext" ]]; then
+    curcontext="expand-latest-word:::"
+  else
+    curcontext="expand-latest-word:${curcontext#*:}"
+  fi
+
+  word="$IPREFIX$PREFIX$SUFFIX$ISUFFIX"
+  pre=(_main_complete - latests)
+fi
+
+glob=$word'(oc)'
+declare -a a
+a=($~glob)
+
+offset=1
+[[ -n $NUMERIC ]] && (( offset=$NUMERIC ))
+tmp=${a[$offset]}
+
+if [[ -n $tmp ]]; then
+  $pre compadd -UQ ${(Q)tmp}
+else
+  return 1
+fi
