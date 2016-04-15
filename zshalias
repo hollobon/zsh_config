@@ -47,7 +47,7 @@ fi
 
 # Site specific
 if [[ $LOCATION = work ]]; then
-
+    source ~/.zsh/zshalias_work
 elif [[ $LOCATION = home ]]; then
     alias scan="xsane 'hpaio:/net/Photosmart_2570_series?ip=10.0.0.133'"
 
