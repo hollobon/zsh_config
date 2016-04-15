@@ -61,6 +61,11 @@ HELPDIR=~/.zsh/zsh-help
 bindkey ${terminfo[khome]} beginning-of-line
 bindkey ${terminfo[kend]} end-of-line
 
+if [[ $TERM = screen* ]]; then
+    bindkey "^[^[OD" backward-word
+    bindkey "^[^[OC" forward-word
+fi
+
 if [[ $HOST = *hollobon.com &&  ( $OSTYPE = "linux-gnu" || $OSTYPE = solaris* ) ]]; then
     PATH=${PATH}:/sbin:/usr/sbin
 fi
