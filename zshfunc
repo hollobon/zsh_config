@@ -217,3 +217,8 @@ proxy() {
     ssh -f -L 8923:localhost:8923 peterhollobon@yingguo ncat -l --proxy-type http localhost 8923
     export http_proxy="http://localhost:8923"
 }
+
+# Display environment for a process given a PID
+envp() {
+    sed -e 's/\x0/\n/g' < /proc/$1/environ
+}
