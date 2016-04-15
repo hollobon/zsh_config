@@ -1,6 +1,7 @@
 # -*- mode: Shell-script; -*-
 
 alias rerc="source ~/.zshrc"
+
 alias ll="ls -ltr"
 alias llh="ls -ltrh"
 alias gv="gvim"
@@ -73,3 +74,9 @@ fi
 alias stowconfigure='./configure --prefix /usr/local/stow/$(basename $PWD)'
 
 alias hibernate="sudo pm-hibernate"
+
+alias term="rxvt -bg grey10 -fg grey80 -geometry 132x80 -fn 'xft:Ubuntu Mono:pixelsize=15'"
+alias diffu="diff -uw"
+
+# Docker
+alias "dkex" "docker exec -ti"
