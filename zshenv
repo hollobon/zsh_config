@@ -40,6 +40,9 @@ if [[ $OSTYPE = solaris* && -e $HOME/.terminfo/${TERM[0]}/$TERM ]]; then
     export TERMINFO=$HOME/.terminfo
 fi
 
+# -F: quit if one screen; -R: raw control characters; -X: don't send init/deinit strings
+export LESS=" -FRX"
+
 if [[ $LOCATION = work ]]; then
     # Less
     export PAGER=less
