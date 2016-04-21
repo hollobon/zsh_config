@@ -18,7 +18,14 @@ fi
 
 #export CVS_RSH=$(which ssh)
 
-export EDITOR=vim
+if (( $+commands[emacsclient] )); then
+    export EDITOR=emacsclient
+elif (( $+commands[vim] )); then
+    export EDITOR=vim
+elif (( $+commands[vi] )); then
+    export EDITOR=vi
+fi
+
 export INFODIR=~/info
 
 LOCATION=home
