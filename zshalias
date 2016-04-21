@@ -1,5 +1,6 @@
 # -*- mode: Shell-script; -*-
 
+
 alias rerc="source ~/.zshrc"
 
 alias ll="ls -ltr"
@@ -79,4 +80,9 @@ alias term="rxvt -bg grey10 -fg grey80 -geometry 132x80 -fn 'xft:Ubuntu Mono:pix
 alias diffu="diff -uw"
 
 # Docker
-alias "dkex" "docker exec -ti"
+alias dk="docker"
+alias dkx="docker exec -ti"
+alias dkc="docker-compose"
+
+# General
+alias pycharm="wmname LG3D && /usr/florin/pycharm/current/bin/pycharm.sh &!"
