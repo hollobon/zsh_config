@@ -22,7 +22,7 @@ if [[ "$terminfo[colors]" -ge 8 ]]; then
     colors
 fi
 
-# Key bindings
+# Key bindings: Emacs with meta key layer set up
 bindkey -me
 
 fpath=(~/.zsh/functions $fpath)
@@ -90,3 +90,6 @@ ttyctl -f
 
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
 [[ $+commands[keychain] -eq 1 ]] && eval $(keychain --eval --agents ssh -Q --quiet)
+
+# g-w, o-rw
+umask 026

@@ -1,5 +1,7 @@
 # -*- mode: Shell-script; -*-
 
+# Create environment variables for commonly-used directories
+
 local -A dirs
 
 if [[ $LOCATION = work ]]; then 
