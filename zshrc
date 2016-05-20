@@ -42,7 +42,7 @@ setopt sharehistory
 setopt extended_glob
 setopt nobeep
 export WORDCHARS=
-export PS1="%2m:%B%~%b%(1j.[%j].)%# "
+export PS1="%(0?..%K{red}%?%k )%2m:%B%~%b%(1j.[%j].)%# "
 
 # Directory stack
 setopt auto_pushd
