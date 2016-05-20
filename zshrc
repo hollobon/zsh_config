@@ -42,7 +42,12 @@ setopt sharehistory
 setopt extended_glob
 setopt nobeep
 export WORDCHARS=
-export PS1="%(0?..%K{red}%?%k )%2m:%B%~%b%(1j.[%j].)%# "
+if [[ $HOST = *pete* ]]; then
+    prompthost="%2m"
+else
+    prompthost="%K{red}%B%F{white}%2m%f%b%k"
+fi
+export PS1="%! %(0?..%K{red}%?%k )${prompthost}%B%F{black}:%f%b%B%~%b%(1j.[%j].)%# "
 
 # Directory stack
 setopt auto_pushd
