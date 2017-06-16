@@ -27,8 +27,9 @@ alias newpw="apg -a1 -m 15 -n 1 -MNCL | xsel -bi"
 # Paste interleave - interleaves lines of 2 or more files.
 alias pastei="paste -d\\\n"
 
-alias ec="emacsclient --no-wait -a emacs"
-alias ecw="emacsclient -a emacs"
+alias ec="emacsclient --no-wait"
+alias ecw="emacsclient"
+alias ect="emacsclient -t"
 
 alias find.="noglob find . -name"
 alias findi.="noglob find . -iname"
@@ -37,8 +38,11 @@ alias nospaces="sed -e 's/ //g'"
 
 alias cx="chmod u+x"
 alias mmv="noglob zmv -W"
+alias g="git"
 
 alias p4changestats='for d in $(p4 users | cut -f1 -d\ ); do echo -n $d: ; p4 changes -u $d | wc -l ; done | sort -k 2,2 -n'
+
+alias epoch="python -c 'import sys, datetime; print datetime.datetime.fromtimestamp(int(sys.argv[1]))'"
 
 # OS specific, site agnostic
 if [[ $OSTYPE = solaris* ]]; then
@@ -67,6 +71,7 @@ fi
 alias lsb="ls -B"
 alias llb="ll -B"
 alias "cd-"="cd -"
+alias sd="sudo"
 
 if [[ -e /usr/bin/VBoxManage ]]; then
     alias vbm=VBoxManage
@@ -84,5 +89,5 @@ alias dk="docker"
 alias dkx="docker exec -ti"
 alias dkc="docker-compose"
 
-# General
-alias pycharm="wmname LG3D && /usr/florin/pycharm/current/bin/pycharm.sh &!"
+# Global aliases
+alias -g "?cb"="\$(xclip -selection clipboard -o)"

@@ -98,3 +98,6 @@ ttyctl -f
 
 # g-w, o-rw
 umask 026
+
+# emacs
+alias edm='rm -f ~/.emacs.desktop/.emacs.desktop.lock; emacs --daemon'
